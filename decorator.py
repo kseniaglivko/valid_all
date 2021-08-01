@@ -65,5 +65,8 @@ def output_validator(predicate, on_fail_repeat_times=1, default_behavior=None):
     return wrapper
 
 
+def valid_all(precondition=input_validator, postcondition=output_validator, on_fail_repeat_times=1, default_behavior=None)
+
+
 def default_behaviour():
     print("¯\_(ツ)_/¯\nВсе плохо, переделывай!")
