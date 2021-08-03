@@ -4,8 +4,12 @@
 from exceptions import InputParameterVerificationError, ResultVerificationError
 
 
+# Примерная структура:
+# 1. Валидация json = V
+# 2. Валидация регулярных выражений = V
+# 3. Валидатор типов - начат ниже.
 # Необходимо реализовать функцию, которая бы извлекала данные для этой функции.
-def type_validator(type_):
+def validate_type(type_):
     """Функция проверяет входные или выходные данные на соответсвие требуемому типу."""
 
     def predicate(arg):
@@ -15,58 +19,60 @@ def type_validator(type_):
 
 
 # Этот декоратор должен обрабатывать входные данные.
-def input_validator(predicate):
-    """Валидатор типа входных данных. В качестве аргумента (predicate) должна передаваться функция "type_validator()",
-    через которую в декоратор и передается инофрмация о валидности типа данных для дальнейшей обработки."""
+def input_validator(predicate, on_fail_repeat_times=1, default_behavior=None):
+    """
+    Валидатор входных данных. В качестве аргумента (predicate) должна передаваться одна из валидирующих функций,
+    выбираемых исходя из требуемого типа входных данных.
+    Через нее в valid_all передается инофрмация о валидности входных данных для дальнейшей обработки.
+    """
 
     def wrapper(function):
-        def inner(arg):
-            if not predicate(arg):
+        def inner(*args):
+            if not predicate(*args):
                 raise InputParameterVerificationError
-            return function(arg)
+            return function(*args)
 
         return inner
 
     return wrapper
 
 
-# Этот декоратор должен обрабатывать результат функции. Надо подумать, как их связать воедино.
+# Этот декоратор должен обрабатывать результат функции.
 def output_validator(predicate, on_fail_repeat_times=1, default_behavior=None):
-    """Валидатор типа выходных данных. В качестве аргумента (predicate) должна передаваться функция "type_validator()",
-    через которую в декоратор и передается инофрмация о валидности типа данных для дальнейшей обработки."""
+    """
+    Валидатор выходных данных. В качестве аргумента (predicate) должна передаваться одна из валидирующих функций,
+    выбираемых исходя из требуемого типа входных данных.
+    Через нее в valid_all передается инофрмация о валидности выходных данных для дальнейшей обработки.
+    """
 
     def wrapper(function):
-        def inner(arg):
-            if not predicate(arg):
+        def inner(*args):
+            if not predicate(*args):
                 if on_fail_repeat_times != 0:
                     if on_fail_repeat_times > 0:
                         while on_fail_repeat_times > 0:
-                            behaviour = default_behavior
-                            counter = on_fail_repeat_times - 1
-                            output_validator(
-                                predicate, counter, default_behavior=behaviour
-                            )
-                            # А как проверяемая функция будет меняться?
+                            for _ in range(on_fail_repeat_times):
+                                function(*args)
                     if on_fail_repeat_times < 0:
-                        behaviour = default_behavior
-                        value = on_fail_repeat_times
-                        output_validator(
-                            predicate,
-                            on_fail_repeat_times=value,
-                            default_behavior=behaviour,
-                        )
+                        while True:
+                            function(*args)
                 if default_behavior is not None:
                     default_behaviour()
                 raise ResultVerificationError
-            return function(arg)
+            return function(*args)
 
         return inner
 
     return wrapper
 
 
-def valid_all(precondition=input_validator, postcondition=output_validator, on_fail_repeat_times=1, default_behavior=None)
+@input_validator
+@output_validator(predicate, on_fail_repeat_times=1, default_behavior=None)
+def valid_all(function):
+    """Финальный декоратор, через применение которого будет реализовываться проверка требуемой функции."""
+    pass
 
 
 def default_behaviour():
-    print("¯\_(ツ)_/¯\nВсе плохо, переделывай!")
+    print("¯\_(ツ)_/¯\nВероятно, этот нехороший человек наврал о своих способностях!")
+
