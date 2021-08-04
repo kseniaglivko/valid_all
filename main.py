@@ -1,36 +1,27 @@
 """
-Программа для запуска проверки функции с помощью валидатора valid_all.
-
+Модуль, в котором определяется проверямая декоратором функция, а также осуществляется ее запуск.
+При запуске main.py из консоли необходимо указать путь до валидируемого json-файла.
 """
 
+import sys
+from decorator import valid_all
+from utils import process_json, output_validation, default_function
 
-# Временно здесь обоснуется проверяемая функция.
 
-def find_user_superpower(json_file: dict) -> str:
-    output = "У участника " + str(json_file["name"]) + " следующая суперспособность: " + str(json_file["power"]) + "."
+path_to_json = str(sys.argv[1])
+
+
+@valid_all(
+    precondition = process_json,
+    postcondition = output_validation,
+    on_fail_repeat_times = 2,
+    default_behavior = default_function)
+def find_user_email(json_file: str) -> str:
+    """Тестовая функция для демонстрации работы декоратора."""
+    output = "Email участника " + str(json_file["name"]) + " : " + str(json_file["email"]) + "."
     return output
 
 
-# Все, что далее, будет удалено или переработано.
-
-path_to_function = str(sys.argv[1])
-
-
-def run_validation_checks(path_to_file: str) -> None:
-    """
-    Функция принимает путь до файла и добаляет импорт и запуск валдатора в указанный файл.
-    Таким образом осуществлется подготовка к проверке валидатором требуемой функции.
-    """
-
-    with open(path_to_file, "r") as f:
-        data = f.read()
-    with open(path_to_file, "w") as f:
-        f.writelines(["from decorator import valid_all\n\n"])
-        f.writelines(["@valid_all\n"])
-        f.writelines(data)
-
-
 if __name__ == "__main__":
-    # Давляем валидатор для проверки в файл и запускаем требуемую функцию.
-    run_validation_checks(path_to_function)
-    os.system(f"python3 {path_to_function}")
+    # Запускаем функцию на проверку.
+    find_user_email(path_to_json)

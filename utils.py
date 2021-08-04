@@ -1,4 +1,7 @@
-"""Модуль, в котором разработаны функции для валидации параметров, которые будут применяться в декораторе."""
+"""
+Модуль, в котором разработаны функции для валидации параметров, которые будут применяться в декораторе,
+а также функция 'default_function'.
+"""
 
 import json
 import jsonschema
@@ -33,7 +36,7 @@ def input_validation(data: dict) -> None:
         "description": "Данные участника игры.",
         "properties": {
             "name": {"type": "string"},
-            "email": {"type": "string", "format": "email", "pattern": "",},
+            "email": {"type": "string", "format": "email"},
             "mobile_number": {"type": "string", "pattern": "^(8|\+7|7)(9)([0-9]{9}$)$"},
             "race": {
                 "type": "string",
@@ -64,7 +67,11 @@ def output_validation(output: str) -> None:
     """Функция валидации возвращаемого результата по регулярному выражению."""
     pattern = "^([a-zA-Z0-9_.-]+)(@)([a-z]+)([.])([a-z]{2,})$"
     result = re.fullmatch(pattern, output)
-    if result is True:
+    if result:
         print("Результат выполнения функции прошел валидацию!")
     else:
         raise ResultVerificationError
+
+
+def default_function():
+    print("¯\_(ツ)_/¯\nПохоже, требуемую информацию не получить. Удачи в другой раз!")
