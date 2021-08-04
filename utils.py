@@ -2,7 +2,8 @@
 
 import json
 import jsonschema
-from exceptions import InputParameterVerificationError
+import re
+from exceptions import InputParameterVerificationError, ResultVerificationError
 
 
 def process_json(path_to_file: str) -> None:
@@ -13,12 +14,12 @@ def process_json(path_to_file: str) -> None:
     with open(path_to_file, "r") as file:
         try:
             data = json.load(file)
-            data_validation(data)
+            input_validation(data)
         except json.decoder.JSONDecodeError:
             raise InputParameterVerificationError
 
 
-def data_validation(data: dict) -> None:
+def input_validation(data: dict) -> None:
     """
     Функция, валидирующая полученные из функции 'process_json' данные согласно заданной схеме.
     Проверяются типы данных, строки по регулярному выражению ("pattern"),
@@ -32,11 +33,7 @@ def data_validation(data: dict) -> None:
         "description": "Данные участника игры.",
         "properties": {
             "name": {"type": "string"},
-            "email": {
-                "type": "string",
-                "format": "email",
-                "pattern": "^([a-zA-Z0-9_.-]+)(@)([a-z]+)([.])([a-z]{2,})$",
-            },
+            "email": {"type": "string", "format": "email", "pattern": "",},
             "mobile_number": {"type": "string", "pattern": "^(8|\+7|7)(9)([0-9]{9}$)$"},
             "race": {
                 "type": "string",
@@ -61,3 +58,13 @@ def data_validation(data: dict) -> None:
         raise InputParameterVerificationError
     else:
         print("Входные параметры прошли валидацию!")
+
+
+def output_validation(output: str) -> None:
+    """Функция валидации возвращаемого результата по регулярному выражению."""
+    pattern = "^([a-zA-Z0-9_.-]+)(@)([a-z]+)([.])([a-z]{2,})$"
+    result = re.fullmatch(pattern, output)
+    if result is True:
+        print("Результат выполнения функции прошел валидацию!")
+    else:
+        raise ResultVerificationError
