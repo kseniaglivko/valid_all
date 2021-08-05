@@ -4,6 +4,7 @@
 """
 
 import sys
+import json
 from decorator import valid_all
 from utils import process_json, output_validation, default_function
 
@@ -12,13 +13,20 @@ path_to_json = str(sys.argv[1])
 
 
 @valid_all(
-    precondition = process_json,
-    postcondition = output_validation,
-    on_fail_repeat_times = 2,
-    default_behavior = default_function)
-def find_user_email(json_file: str) -> str:
+    precondition=process_json,
+    postcondition=output_validation,
+    on_fail_repeat_times=0,
+    default_behavior=default_function,
+)
+def find_user_email(path_to_file: str) -> str:
     """Тестовая функция для демонстрации работы декоратора."""
-    output = "Email участника " + str(json_file["name"]) + " : " + str(json_file["email"]) + "."
+    with open(path_to_file, "r") as file:
+        try:
+            data = json.load(file)
+        except json.decoder.JSONDecodeError:
+            raise Exception("Невалидный json-файл!")
+    output = str(data["email"])
+    print(f"Email участника: {output}.")
     return output
 
 

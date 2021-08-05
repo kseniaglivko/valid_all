@@ -22,7 +22,7 @@ def process_json(path_to_file: str) -> None:
             raise InputParameterVerificationError
 
 
-def input_validation(data: dict) -> None:
+def input_validation(data: dict) -> bool:
     """
     Функция, валидирующая полученные из функции 'process_json' данные согласно заданной схеме.
     Проверяются типы данных, строки по регулярному выражению ("pattern"),
@@ -31,12 +31,12 @@ def input_validation(data: dict) -> None:
     root_schema = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": "https://example.com/product.schema.json",
-        "title": "Информация об участнике",
         "type": "object",
+        "title": "Информация об участнике",
         "description": "Данные участника игры.",
         "properties": {
             "name": {"type": "string"},
-            "email": {"type": "string", "format": "email"},
+            "email": {"type": "string"},
             "mobile_number": {"type": "string", "pattern": "^(8|\+7|7)(9)([0-9]{9}$)$"},
             "race": {
                 "type": "string",
@@ -61,14 +61,16 @@ def input_validation(data: dict) -> None:
         raise InputParameterVerificationError
     else:
         print("Входные параметры прошли валидацию!")
+        return True
 
 
-def output_validation(output: str) -> None:
+def output_validation(output: str) -> bool:
     """Функция валидации возвращаемого результата по регулярному выражению."""
     pattern = "^([a-zA-Z0-9_.-]+)(@)([a-z]+)([.])([a-z]{2,})$"
     result = re.fullmatch(pattern, output)
     if result:
         print("Результат выполнения функции прошел валидацию!")
+        return True
     else:
         raise ResultVerificationError
 
