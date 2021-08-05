@@ -1,7 +1,4 @@
-"""
-Модуль, в котором разработаны функции для валидации параметров, которые будут применяться в декораторе,
-а также функция 'default_function'.
-"""
+"""Модуль, в котором разработаны функции для валидации параметров, которые будут применяться в декораторе."""
 
 import json
 import jsonschema
@@ -12,6 +9,7 @@ from exceptions import InputParameterVerificationError, ResultVerificationError
 def process_json(path_to_file: str) -> None:
     """
     Функция, считывающая данные из json-файла и передающая их на обработку в функцию 'data_validation'.
+
     Также функция валидирует сам формат json-файла.
     """
     with open(path_to_file, "r") as file:
@@ -25,6 +23,7 @@ def process_json(path_to_file: str) -> None:
 def input_validation(data: dict) -> bool:
     """
     Функция, валидирующая полученные из функции 'process_json' данные согласно заданной схеме.
+
     Проверяются типы данных, строки по регулярному выражению ("pattern"),
     наличие передаваемого значения в списке возможных значений.
     """
@@ -75,5 +74,6 @@ def output_validation(output: str) -> bool:
         raise ResultVerificationError
 
 
-def default_function():
+def default_function() -> None:
+    """Функция, используемая по умолчанию."""
     print("¯\_(ツ)_/¯\nПохоже, требуемую информацию не получить. Удачи в другой раз!")
