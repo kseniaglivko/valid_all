@@ -23,8 +23,8 @@ def find_user_email(path_to_file: str) -> str:
     with open(path_to_file, "r") as file:
         try:
             data = json.load(file)
-        except json.decoder.JSONDecodeError:
-            raise Exception("Невалидный json-файл!")
+        except json.decoder.JSONDecodeError as ex:
+            raise ex
     output = str(data["email"])
     print(f"Email участника: {output}.")
     return output
